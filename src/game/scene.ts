@@ -1,6 +1,7 @@
 import "phaser";
 import store from "../Redux/store";
 import { updateGameState } from "../Redux/gameSlice";
+import Swal from "sweetalert2";
 
 export class Game extends Phaser.Scene {
   // @ts-ignore
@@ -121,6 +122,11 @@ export class Game extends Phaser.Scene {
           this.highlightValidPaths();
           // If rook hits the vortex then winner is declared whichever user did it
           if (rowNo == 7 && colNo == 0) {
+            Swal.fire("You Lose !", `The other player made the rook reach vortex before you`, "info").then(
+              () => {
+                window.location.href = "/";
+              }
+            );
             return;
           }
         },
@@ -137,7 +143,7 @@ export class Game extends Phaser.Scene {
 
     // If it is not player's turn then don't do anything
     if (currState.playerTurn == false) {
-      console.log('Not users turn');
+      console.log("Not users turn");
       return;
     }
     store.dispatch(
@@ -174,6 +180,11 @@ export class Game extends Phaser.Scene {
         this.highlightValidPaths();
         // If rook hits the vortex then winner is declared whichever user did it
         if (rowNo == 7 && colNo == 0) {
+          Swal.fire("You Win !", `Rook reached the vortex`, "success").then(
+            () => {
+              window.location.href = "/";
+            }
+          );
           return;
         }
       },

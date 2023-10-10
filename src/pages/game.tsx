@@ -198,6 +198,7 @@ const Game = () => {
         "warning"
       ).then(() => sendToHome());
     });
+
     socket.on("update-rook-position", (data) => {
       console.log("update-rook-position");
       console.log({
