@@ -25,13 +25,36 @@ body .card {
     height: 100vh;
 }
 
-.profileIcon {
-    height: 75px !important;
-    width: 75px !important;
+.playerSection {
+    position: relative;
+}
+
+.playerSection .profileIcon {
+    height: 72px !important;
+    width: 72px !important;
+    position: relative;
+    z-index: 10;
     margin: 1rem auto;
     display: block;
     overflow: hidden;
     object-fit: contain;
+}
+
+.playerSection .text {
+    font-size: 0.8rem;
+    color: white;
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.playerSection .top {
+    bottom: 70px;
+}
+
+.playerSection .bottom {
+    top: 96px;
 }
 
 #chessboard {

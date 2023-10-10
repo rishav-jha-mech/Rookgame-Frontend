@@ -100,6 +100,9 @@ export class Game extends Phaser.Scene {
     const x = colNo * this.squareSize + 28;
     const y = rowNo * this.squareSize + 30;
     let currState = store.getState().game;
+    if (currState.playerTurn == false) {
+      return;
+    }
     store.dispatch(
       updateGameState({
         ...currState,
@@ -134,7 +137,6 @@ export class Game extends Phaser.Scene {
         this.highlightValidPaths();
         // If rook hits the vortex then winner is declared whichever user did it
         if (rowNo == 7 && colNo == 0) {
-          alert("Winner");
           return;
         }
       },

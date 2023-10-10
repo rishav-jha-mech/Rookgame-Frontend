@@ -3,6 +3,26 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { GameStateType } from "../hooks/game";
 import { kYellow } from "../chalk";
 
+type optionsGamesType = {
+  gameId?: string;
+  rookRow?: number;
+  rookCol?: number;
+  timeLeft?: number;
+  player1?: {
+    socketId: string;
+    playerName: string;
+  };
+  player2?: {
+    socketId: string;
+    playerName: string;
+  };
+  playerTurn?: boolean;
+  isGameStarted?: boolean;
+  isGameOver?: boolean;
+  winner?: string;
+  reason?: string;
+};
+
 const initialState: GameStateType = {
   gameId: undefined,
   rookCol: 7,
@@ -27,9 +47,8 @@ const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    updateGameState: (state, action: PayloadAction<GameStateType>) => {
-      kYellow({REDUX_PAYLOAD: action, result : { ...action.payload }})
-      return { ...action.payload };
+    updateGameState: (state, action: PayloadAction<optionsGamesType>) => {
+      return { ...state, ...action.payload };
     },
   },
 });
