@@ -23,12 +23,11 @@ body .card {
     position: relative;
     display: none;
 }
-#game-details{
+#info-card {
     display: none;
-}
-#winner-card,
-#game-over {
-    display: none !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 480px;
     min-height: 400px;
 }

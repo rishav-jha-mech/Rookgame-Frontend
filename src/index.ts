@@ -5,9 +5,7 @@ const form = document.getElementById("game-start");
 const input = document.getElementById("name") as HTMLInputElement;
 const submitButton = document.getElementById("submit-btn");
 const formCard = document.getElementById("form-card");
-const gameOver = document.getElementById("game-over");
-const errorName = document.getElementById("error-name");
-const reason = document.getElementById("reason");
+const infoCard = document.getElementById("info-card");
 const gameDetails = document.getElementById("game-details");
 const copyGameIdBtn = document.getElementById("copy-game-id-btn");
 const gameIdInput = document.getElementById(
@@ -26,7 +24,7 @@ const player2NameParam = urlParams.get("player2Name");
 const socket = io.connect("http://localhost:5000");
 
 socket.on("connect", () => {
-  console.log("Connected to server");
+  console.log("Connected to server with socketid : ", socket.id);
   socketId = socket.id;
   // For the 2nd player
   if (gameId && player2NameParam) {
@@ -39,15 +37,47 @@ socket.on("connect", () => {
 socket.on("disconnect", () => {
   console.log("Disconnected from server");
   alert("Disconnected from server");
-  gameArea.style.display = "none";
-  gameOver.style.display = "block";
-  reason.innerHTML = "Disconnected from server";
+  gameArea.remove();
+  formCard.remove();
+  gameDetails.remove();
+  infoCard.style.display = "flex";
+  infoCard.innerHTML = `
+  <h1 class="text-danger">GAME OVER</h1>
+  <h3 class="text-secondary"> Disconnected From Server</h3>
+  `;
 });
 
-socket.on("game-started", () => {
-  console.log("game-started");
-  gameDetails.style.display = "none";
+socket.on("start-game", () => {
+  console.log("start-game");
+  formCard.remove();
+  gameDetails.remove();
   gameArea.style.display = "block";
+});
+
+socket.on("game-ended", (data) => {
+  console.log("game-ended");
+  formCard.remove();
+  gameDetails.remove();
+  gameArea.remove();
+
+  infoCard.style.display = "flex";
+  infoCard.innerHTML = `
+  <h1 class="text-danger">Game ended</h1>
+  <p class="text-secondary">Play another game instead</p>
+  <h4 class="text-success"> Winner : ${data?.gameState?.winner ?? ""} </h4>
+  <h6 class="text-secondary"> Results : ${data?.gameState?.reason ?? ""} </h6>
+  `;
+});
+
+socket.on("game-not-found", () => {
+  console.log("game-not-found");
+  formCard.remove();
+
+  infoCard.style.display = "flex";
+  infoCard.innerHTML = `
+  <h1 class="text-danger">Game not found</h1>
+  <h3 class="text-secondary"> Please check the game id</h3>
+  `;
 });
 
 socket.on("already-busy", () => {
@@ -70,12 +100,15 @@ form.addEventListener("submit", (event) => {
     .then((response) => response.json())
     .then((data) => {
       formCard.remove();
-      gameDetails.style.display = "block";
+      gameDetails.classList.remove("d-none");
       gameIdInput.value = data.game._id;
     })
     .catch((error) => {
-      errorName.innerHTML = "Server Error";
-      reason.innerText = `Please refresh the page or try again later`;
+      infoCard.style.display = "flex";
+      infoCard.innerHTML = `
+  <h1 class="text-danger">Server Error</h1>
+  <h3 class="text-secondary">Please refresh the page or try again later</h3>
+  `;
       console.log(error);
     });
 });
