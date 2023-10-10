@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 
-body {
+.game {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,26 +15,30 @@ body {
 body .card {
     width: 480px;
     min-height: 200px;
-    display: none;
 }
-#game-area{
+
+#game-area {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     height: 100vh;
 }
-#game-area img{
-    height: 100px;
-    width: 100px;
-    margin: 1rem 0;
+
+.profileIcon {
+    height: 75px !important;
+    width: 75px !important;
+    margin: 1rem auto;
+    display: block;
+    overflow: hidden;
+    object-fit: contain;
 }
+
 #chessboard {
     height: 480px;
     width: 480px;
-    position: relative;
-    /* display: none; */
 }
+
 #info-card {
     display: none;
     flex-direction: column;
