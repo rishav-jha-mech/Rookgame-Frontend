@@ -15,6 +15,9 @@ const game = {
   ...config,
 };
 
+// Connect to socketio server
+const socket = io.connect("http://localhost:5000");
+
 const Game = () => {
   const {
     formModal,
@@ -29,7 +32,6 @@ const Game = () => {
   const gameIdParam = urlParams.get("gameId");
   const player2NameParam = urlParams.get("player2Name");
   const [gameId, setGameId] = useState(gameIdParam);
-  const [socketId, setSocketId] = useState("");
   const [timerSelf, setTimerSelf] = useState(30);
   const [timerOther, setTimerOther] = useState(30);
   function sendToHome() {
@@ -51,14 +53,26 @@ const Game = () => {
     return () => {};
   }, [gameState]);
 
+  // Movement of rook socket
+  useEffect(() => {
+    if (gameState.isGameStarted) {
+      console.log("rook-moved");
+      socket.emit(
+        "rook-moved",
+        JSON.stringify({
+          gameId,
+          rookRow: gameState.rookRow,
+          rookCol: gameState.rookCol,
+          socketId: socket.id,
+        })
+      );
+    }
+  }, [gameState.playerTurn]);
+
   // Socket useEffect
   useEffect(() => {
-    // Connect to socketio server
-    const socket = io.connect("http://localhost:5000");
-
     socket.on("connect", () => {
       console.log("Connected to server with socketid : ", socket.id);
-      setSocketId(socket.id);
       // For the 2nd player
       if (gameId && player2NameParam) {
         dispatch(
@@ -184,12 +198,38 @@ const Game = () => {
         "warning"
       ).then(() => sendToHome());
     });
+    socket.on("update-rook-position", (data) => {
+      console.log("update-rook-position");
+      console.log({
+        data,
+        rookRow: gameState.rookRow,
+        rookCol: gameState.rookCol,
+      });
+      if (
+        data.rookRow !== gameState.rookRow ||
+        data.rookCol !== gameState.rookCol
+      ) {
+        dispatch(
+          updateGameState({
+            rookRow: data.rookRow,
+            rookCol: data.rookCol,
+            playerTurn: true,
+          })
+        );
+      }
+    });
 
     return () => {
-      socket.disconnect();
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("start-game");
+      socket.off("game-ended");
+      socket.off("game-not-found");
+      socket.off("already-busy");
+      socket.off("update-rook-position");
       kPrettyPrint("Socket disconnected useEffect");
     };
-  }, []);
+  }, [gameState.rookCol, gameState.rookRow, gameState.playerTurn]);
 
   const submitForm = () => {
     const name = formModal.inputText;
@@ -207,7 +247,7 @@ const Game = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ playerName: name, socketId }),
+      body: JSON.stringify({ playerName: name, socketId: socket.id }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -216,7 +256,7 @@ const Game = () => {
           updateGameState({
             player1: {
               playerName: name,
-              socketId,
+              socketId: socket.id,
             },
           })
         );

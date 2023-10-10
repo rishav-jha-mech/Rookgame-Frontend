@@ -58,6 +58,7 @@ export class Game extends Phaser.Scene {
     );
     this.vortex = this.add.image(30, 455, "vortex");
     this.highlightValidPaths();
+    store.subscribe(this.stateUpdate);
   }
   private highlightValidPaths() {
     this.clearHighlights();
@@ -94,20 +95,56 @@ export class Game extends Phaser.Scene {
     });
     this.highlightedPaths = [];
   }
-
-  handleClick(params: { rowNo: number; colNo: number }) {
+  private stateUpdate = () => {
+    const currState = store.getState().game;
+    if (
+      currState.rookRow != this.rookRow ||
+      currState.rookCol != this.rookCol
+    ) {
+      const rowNo = currState.rookRow;
+      const colNo = currState.rookCol;
+      const x = colNo * this.squareSize + 28;
+      const y = rowNo * this.squareSize + 30;
+      this.tweens.add({
+        targets: this.rook,
+        x: x,
+        y: y,
+        duration: 400,
+        ease: "Linear",
+        onStart: () => {
+          this.isRookMoving = true;
+        },
+        onComplete: () => {
+          this.isRookMoving = false;
+          this.rookRow = rowNo;
+          this.rookCol = colNo;
+          this.highlightValidPaths();
+          // If rook hits the vortex then winner is declared whichever user did it
+          if (rowNo == 7 && colNo == 0) {
+            return;
+          }
+        },
+      });
+    }
+  };
+  private handleClick(params: { rowNo: number; colNo: number }) {
     const { rowNo, colNo } = params;
     const x = colNo * this.squareSize + 28;
     const y = rowNo * this.squareSize + 30;
     let currState = store.getState().game;
+
+    console.log("handleClick called");
+
+    // If it is not player's turn then don't do anything
     if (currState.playerTurn == false) {
+      console.log('Not users turn');
       return;
     }
     store.dispatch(
       updateGameState({
-        ...currState,
         rookRow: rowNo,
         rookCol: colNo,
+        playerTurn: false,
       })
     );
 
