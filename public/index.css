@@ -12,8 +12,23 @@ body {
     height: 100vh;
 }
 
+body .card {
+    width: 480px;
+    min-height: 200px;
+}
+
 #game-area {
     height: 480px;
     width: 480px;
     position: relative;
+    display: none;
+}
+#game-details{
+    display: none;
+}
+#winner-card,
+#game-over {
+    display: none !important;
+    width: 480px;
+    min-height: 400px;
 }

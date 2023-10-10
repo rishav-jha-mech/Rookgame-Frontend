@@ -133,7 +133,7 @@ class Game extends Phaser.Scene {
 
 const config = {
   type: Phaser.AUTO,
-  parent: "game-area",
+  parent: "chessboard",
   width: 480,
   height: 480,
   scene: Game,
@@ -141,3 +141,4 @@ const config = {
 const game = new Phaser.Game(config);
 
 // game.destroy(true);
+import './index'
