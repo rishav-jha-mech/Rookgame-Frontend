@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../assets/css/home.css";
@@ -9,6 +9,7 @@ const Home = () => {
   const [show, setShow] = React.useState(false);
   const [gameCode, setGameCode] = React.useState("");
   const [name, setName] = React.useState("");
+  const [isBtnLoading, setIsBtnLoading] = React.useState(false);
   const navigate = useNavigate();
 
   const checkGameAndJoin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,7 +27,7 @@ const Home = () => {
       Swal.fire("Error", "Name cannot be more than 50 characters", "error");
       return;
     }
-
+    setIsBtnLoading(true);
     fetch(`${SERVER_URL}/api/games/gameExists`, {
       method: "POST",
       headers: {
@@ -36,17 +37,19 @@ const Home = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        setIsBtnLoading(false);
         if (data.error) {
           Swal.fire("Error", `${data?.error}`, "error");
           return;
         }
-        Swal.fire("Game exists", "Click Ok to join the game", "success").then(
+        Swal.fire(`${data?.message}`, "Click Ok to join the game", "success").then(
           () => {
             window.location.href = `/game?gameId=${gameCode}&player2Name=${name}`;
           }
         );
       })
       .catch((error: any) => {
+        setIsBtnLoading(false);
         Swal.fire("Error", `${error?.error}`, "error");
         console.error({ error });
       });
@@ -79,8 +82,8 @@ const Home = () => {
             <Button variant="secondary" onClick={() => setShow(false)}>
               Close
             </Button>
-            <Button variant="info" type="submit">
-              Join Game
+            <Button variant="info" type="submit" disabled={isBtnLoading}>
+              {isBtnLoading ? <Spinner variant="white" size="sm" /> : "Join Game"}
             </Button>
           </Modal.Footer>
         </Form>
@@ -110,7 +113,11 @@ const Home = () => {
                   >
                     Join a game
                   </Button>
-                  <Button className="aqua-btn w-100 w-sm-unset" onClick={() => navigate("/game")} variant="info" >
+                  <Button
+                    className="aqua-btn w-100 w-sm-unset"
+                    onClick={() => navigate("/game")}
+                    variant="info"
+                  >
                     Create new game
                   </Button>
                 </div>
@@ -152,7 +159,16 @@ const Home = () => {
         </div>
       </div>
       <footer className="bg-dark py-3">
-        <p className="mb-0 text-center text-info">Made with 💜 by <a href="https://rishav-jha-mech.github.io/devraj" target="_blank" rel="noopener noreferrer">Rishav Jha</a> </p>
+        <p className="mb-0 text-center text-info">
+          Made with 💜 by{" "}
+          <a
+            href="https://rishav-jha-mech.github.io/devraj"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Rishav Jha
+          </a>{" "}
+        </p>
       </footer>
     </>
   );

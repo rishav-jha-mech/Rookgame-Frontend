@@ -37,7 +37,7 @@ function useGameState() {
         show: boolean,
         inputText: string
     }>({
-        show: true,
+        show: false,
         inputText: ""
     });
 

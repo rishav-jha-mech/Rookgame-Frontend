@@ -35,6 +35,7 @@ const Game = () => {
   const [gameId, setGameId] = useState(gameIdParam);
   const [timerSelf, setTimerSelf] = useState(DECISION_TIMEOUT);
   const [timerOther, setTimerOther] = useState(DECISION_TIMEOUT);
+  const [btnLoading, setBtnLoading] = useState(false);
   function sendToHome() {
     window.location.href = "/";
   }
@@ -322,6 +323,7 @@ const Game = () => {
       );
       return;
     }
+    setBtnLoading(true);
     // fetch request to create a new game
     fetch(`${SERVER_URL}/api/games/createNewGame`, {
       method: "POST",
@@ -332,6 +334,7 @@ const Game = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        setBtnLoading(false);
         setGameId(data.game._id);
         dispatch(
           updateGameState({
@@ -354,6 +357,7 @@ const Game = () => {
         });
       })
       .catch((error) => {
+        setBtnLoading(false);
         Swal.fire(
           "Server Error",
           "Please refresh the page or try again later",
@@ -393,7 +397,11 @@ const Game = () => {
                 <Button
                   variant="info"
                   onClick={() => {
-                    navigator.clipboard.writeText(`${gameId}`);
+                    try {
+                      navigator.clipboard.writeText(`${gameId}`);
+                    } catch (error) {
+                      console.log(error);
+                    }
                     Swal.fire({
                       position: "top-end",
                       icon: "success",
@@ -433,8 +441,9 @@ const Game = () => {
                     type="submit"
                     variant="info"
                     className="ms-auto mt-3 d-block"
+                    disabled={btnLoading}
                   >
-                    Create Game
+                    {btnLoading ? <Spinner variant="white" /> : "Create Game "}
                   </Button>
                 </div>
               </Form>

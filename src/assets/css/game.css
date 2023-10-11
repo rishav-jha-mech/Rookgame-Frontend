@@ -9,7 +9,7 @@
     justify-content: center;
     align-items: center;
     background: #000;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .game .card {
@@ -90,7 +90,6 @@
     }
 
     #canvas {
-        background-color: #ddf;
         transform: scale(0.75);
         margin-top: -40px;
     }
