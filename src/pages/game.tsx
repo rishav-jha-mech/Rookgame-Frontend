@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { updateGameState } from "../Redux/gameSlice";
 import { kPrettyPrint } from "../chalk";
 import { CircularProgressbar } from "react-circular-progressbar";
+import { DECISION_TIMEOUT } from "../constants";
 
 const game = {
   ...config,
@@ -32,8 +33,8 @@ const Game = () => {
   const gameIdParam = urlParams.get("gameId");
   const player2NameParam = urlParams.get("player2Name");
   const [gameId, setGameId] = useState(gameIdParam);
-  const [timerSelf, setTimerSelf] = useState(30);
-  const [timerOther, setTimerOther] = useState(30);
+  const [timerSelf, setTimerSelf] = useState(DECISION_TIMEOUT);
+  const [timerOther, setTimerOther] = useState(DECISION_TIMEOUT);
   function sendToHome() {
     window.location.href = "/";
   }
@@ -48,10 +49,48 @@ const Game = () => {
     }
   }, []);
 
-  // Game state changes
   useEffect(() => {
+    if (timerSelf === 0) {
+      socket.emit(
+        "timer-ended",
+        JSON.stringify({ gameId: gameId, socketId: socket.id })
+      );
+      Swal.fire("You Lose", `You did not move on time !`, "info").then(() =>
+        sendToHome()
+      );
+    }
     return () => {};
-  }, [gameState]);
+  }, [timerSelf]);
+
+  // Timout useEffect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (gameState.isGameStarted && gameState.playerTurn) {
+      interval = setInterval(() => {
+        setTimerSelf((prevTimerSelf) => {
+          return prevTimerSelf - 1;
+        });
+      }, 1000);
+    } else if (gameState.isGameStarted && !gameState.playerTurn) {
+      interval = setInterval(() => {
+        setTimerOther((prevTimerOther) => {
+          return prevTimerOther - 1;
+        });
+      }, 1000);
+    } else {
+      // Reset timers if the game is not started or it's not player's turn
+      setTimerSelf(DECISION_TIMEOUT);
+      setTimerOther(DECISION_TIMEOUT);
+    }
+
+    // Cleanup function
+    return () => {
+      clearInterval(interval);
+      setTimerSelf(DECISION_TIMEOUT);
+      setTimerOther(DECISION_TIMEOUT);
+    };
+  }, [gameState.isGameStarted, gameState.playerTurn]);
 
   // Movement of rook socket
   useEffect(() => {
@@ -220,6 +259,36 @@ const Game = () => {
       }
     });
 
+    socket.on("you-win", (data) => {
+      console.log("you-win");
+      console.log(data);
+      dispatch(
+        updateGameState({
+          isGameOver: true,
+          winner: data.gameState.winner,
+          reason: data.gameState.reason,
+        })
+      );
+      Swal.fire("You Win", `Your opponent did not move on time`, "info").then(
+        () => sendToHome()
+      );
+    });
+
+    socket.on("you-lose", (data) => {
+      console.log("you-lose");
+      console.log(JSON.stringify(data, null, 4));
+      dispatch(
+        updateGameState({
+          isGameOver: true,
+          winner: data.gameState.winner,
+          reason: data.gameState.reason,
+        })
+      );
+      Swal.fire("You Lose", `You did not move on time !`, "info").then(() =>
+        sendToHome()
+      );
+    });
+
     return () => {
       socket.off("connect");
       socket.off("disconnect");
@@ -228,6 +297,8 @@ const Game = () => {
       socket.off("game-not-found");
       socket.off("already-busy");
       socket.off("update-rook-position");
+      socket.off("you-lose");
+      socket.off("you-win");
       kPrettyPrint("Socket disconnected useEffect");
     };
   }, [gameState.rookCol, gameState.rookRow, gameState.playerTurn]);
@@ -386,7 +457,7 @@ const Game = () => {
                       stroke: "#2B2B2B",
                     },
                   }}
-                  value={timerOther / 30}
+                  value={timerOther / DECISION_TIMEOUT}
                   maxValue={1}
                   counterClockwise
                 />
@@ -437,7 +508,7 @@ const Game = () => {
                       stroke: "#2B2B2B",
                     },
                   }}
-                  value={timerSelf / 30}
+                  value={timerSelf / DECISION_TIMEOUT}
                   maxValue={1}
                   counterClockwise
                 />

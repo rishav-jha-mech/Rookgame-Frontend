@@ -146,14 +146,6 @@ export class Game extends Phaser.Scene {
       console.log("Not users turn");
       return;
     }
-    store.dispatch(
-      updateGameState({
-        rookRow: rowNo,
-        rookCol: colNo,
-        playerTurn: false,
-      })
-    );
-
     // Rook cannot go backwards
     if (rowNo < this.rookRow || colNo > this.rookCol) {
       return;
@@ -163,6 +155,14 @@ export class Game extends Phaser.Scene {
     if (rowNo != this.rookRow && colNo != this.rookCol) {
       return;
     }
+
+    store.dispatch(
+      updateGameState({
+        rookRow: rowNo,
+        rookCol: colNo,
+        playerTurn: false,
+      })
+    );
 
     this.tweens.add({
       targets: this.rook,
