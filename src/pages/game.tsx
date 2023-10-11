@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, Card, Spinner, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { updateGameState } from "../Redux/gameSlice";
-import { kPrettyPrint } from "../chalk";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { DECISION_TIMEOUT, SERVER_URL } from "../constants";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -301,7 +300,7 @@ const Game = () => {
       socket.off("update-rook-position");
       socket.off("you-lose");
       socket.off("you-win");
-      kPrettyPrint("Socket disconnected useEffect");
+      console.log("Socket disconnected useEffect");
     };
   }, [gameState.rookCol, gameState.rookRow, gameState.playerTurn]);
 
