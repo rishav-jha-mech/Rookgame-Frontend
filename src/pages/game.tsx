@@ -362,9 +362,10 @@ const Game = () => {
   return (
     <>
       <div className="game">
-        <div className="card">
+        {/* Redux Card */}
+        {/* <div className="card">
           <pre>{JSON.stringify(gameState, null, 4)}</pre>
-        </div>
+        </div> */}
         {waitingForOtherPlayerModal.show && (
           <Card>
             <Card.Header>
