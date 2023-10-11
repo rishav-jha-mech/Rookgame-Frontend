@@ -5,7 +5,7 @@ import { config } from "../game/index";
 import useGameState, { GameStateType } from "../hooks/game";
 import * as io from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Card, Spinner, FormControl, FormLabel } from "react-bootstrap";
+import { Button, Card, Spinner, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { updateGameState } from "../Redux/gameSlice";
 import { kPrettyPrint } from "../chalk";
@@ -303,12 +303,20 @@ const Game = () => {
     };
   }, [gameState.rookCol, gameState.rookRow, gameState.playerTurn]);
 
-  const submitForm = () => {
+  const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
     const name = formModal.inputText;
     if (name.length === 0) {
       Swal.fire(
         "Empty name",
         "Please enter a name before proceeding",
+        "warning"
+      );
+      return;
+    }
+    if (name.length >= 50) {
+      Swal.fire(
+        "Name too long",
+        "Please enter a name less than 50 characters",
         "warning"
       );
       return;
@@ -381,7 +389,7 @@ const Game = () => {
                 <Spinner className="mx-auto my-4 d-block" />
               </div>
               <div className="position-relative">
-                <FormControl
+                <Form.Control
                   placeholder="Game Id"
                   defaultValue={gameId ?? ""}
                   readOnly
@@ -411,24 +419,24 @@ const Game = () => {
               <h4>Create a Game</h4>
             </Card.Header>
             <Card.Body>
-              <FormLabel className="mb-2">Enter name</FormLabel>
-              <FormControl
-                placeholder="Enter name"
-                onChange={(e: any) => {
-                  updateFormModal({
-                    ...formModal,
-                    inputText: e.target.value,
-                  });
-                }}
-              />
-              <div>
-                <Button
-                  onClick={() => submitForm()}
-                  className="ms-auto mt-3 d-block"
-                >
-                  Start Game
-                </Button>
-              </div>
+              <Form onSubmit={(e) => submitForm(e)}>
+                <Form.Label className="mb-2">Enter name</Form.Label>
+                <Form.Control
+                  placeholder="Enter your name"
+                  autoFocus
+                  onChange={(e: any) => {
+                    updateFormModal({
+                      ...formModal,
+                      inputText: e.target.value,
+                    });
+                  }}
+                />
+                <div>
+                  <Button type="submit" className="ms-auto mt-3 d-block">
+                    Start Game
+                  </Button>
+                </div>
+              </Form>
             </Card.Body>
           </Card>
         )}
