@@ -1,13 +1,15 @@
 import React from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../assets/css/home.css";
+import { SERVER_URL } from "../constants";
 
 const Home = () => {
   const [show, setShow] = React.useState(false);
   const [gameCode, setGameCode] = React.useState("");
   const [name, setName] = React.useState("");
+  const navigate = useNavigate();
 
   const checkGameAndJoin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ const Home = () => {
       return;
     }
 
-    fetch(`http://localhost:5000/api/games/gameExists`, {
+    fetch(`${SERVER_URL}/api/games/gameExists`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,7 +53,7 @@ const Home = () => {
   };
   return (
     <>
-      <Modal show={show}>
+      <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Join Game</Modal.Title>
         </Modal.Header>
@@ -74,43 +76,84 @@ const Home = () => {
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button className="btn btn-primary" onClick={() => setShow(false)}>
+            <Button variant="secondary" onClick={() => setShow(false)}>
               Close
             </Button>
-            <Button className="btn btn-primary" type="submit">
+            <Button variant="info" type="submit">
               Join Game
             </Button>
           </Modal.Footer>
         </Form>
       </Modal>
       <div className="home">
-        <div className="card">
-          <div className="card-body">
-            <div className="d-flex align-items-center justify-content-center border-bottom mb-3">
-              <img src="./assets/rook.svg" alt="rook" className="rook" />
-              <h1>Rook Move</h1>
+        <div className="row content-area">
+          <div className="col-12 col-lg-4">
+            <div className="card" id="game">
+              <div className="card-body">
+                <div className="d-flex align-items-center justify-content-center border-bottom mb-3">
+                  <img src="./assets/rook.svg" alt="rook" className="rook" />
+                  <h3>Rook Move</h3>
+                </div>
+                <p className="text-center mt-4">
+                  You can join a game using a <strong>"Game code"</strong> or{" "}
+                  <strong>"Create a new game"</strong> and invite your friends.
+                </p>
+                <p className="text-center">
+                  Join the Thrilling Rook Race or Forge Your Path to Victory!
+                  Conquer the Chessboard and Emerge as the Ultimate Rook Master
+                </p>
+                <div className="d-flex align-items-center justify-content-center flex-column flex-sm-row mt-5">
+                  <Button
+                    className="me-0 mb-2 mb-sm-0 w-100 w-sm-unset me-sm-3 aqua-btn"
+                    onClick={() => setShow(true)}
+                    variant="info"
+                  >
+                    Join a game
+                  </Button>
+                  <Button className="aqua-btn w-100 w-sm-unset" onClick={() => navigate("/game")} variant="info" >
+                    Create new game
+                  </Button>
+                </div>
+              </div>
             </div>
-            <h4 className="text-center mt-4">
-              You can join a game using a game code or create a new game and
-              invite your friends.
-            </h4>
-            <br />
-            <br />
-            <br />
-            <div className="d-flex align-items-center justify-content-center mt-5">
-              <Button
-                className="btn btn-info btn-lg me-3"
-                onClick={() => setShow(true)}
-              >
-                Join a game
-              </Button>
-              <Link className="btn btn-info btn-lg" to="/game">
-                Create new game
-              </Link>
+          </div>
+          <div className="col-12 col-lg-4" id="rules">
+            <div className="card">
+              <div className="card-body">
+                <div className="d-flex align-items-center justify-content-center border-bottom mb-3">
+                  <img
+                    src="./assets/rules-icon.svg"
+                    alt="rook"
+                    className="rules"
+                  />
+                  <h3>Game Rules</h3>
+                </div>
+                <ul>
+                  <li>The game will be played on an 8x8 chessboard.</li>
+                  <li>
+                    {" "}
+                    There will be two players, and they will take turns to move
+                    the rook. Rooks starts from the top right square.
+                  </li>
+                  <li>
+                    {" "}
+                    On each turn, a player can move the rook any number of steps
+                    to the left or down, but not up, right or diagonally.
+                  </li>
+                  <li>
+                    {" "}
+                    The player who reaches the bottom-left corner of the board
+                    first wins the game.
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <footer className="bg-dark py-3">
+        <p className="mb-0 text-center text-info">Made with 💜 by <a href="https://rishav-jha-mech.github.io/devraj" target="_blank" rel="noopener noreferrer">Rishav Jha</a> </p>
+      </footer>
     </>
   );
 };

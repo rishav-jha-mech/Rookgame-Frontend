@@ -1,1 +1,2 @@
-export const DECISION_TIMEOUT = 10; // seconds
+export const DECISION_TIMEOUT = 200; // seconds
+export const SERVER_URL = process.env.SERVER_URL || 'http://localhost:5000';

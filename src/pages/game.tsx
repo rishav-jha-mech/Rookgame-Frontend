@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import { updateGameState } from "../Redux/gameSlice";
 import { kPrettyPrint } from "../chalk";
 import { CircularProgressbar } from "react-circular-progressbar";
-import { DECISION_TIMEOUT } from "../constants";
+import { DECISION_TIMEOUT, SERVER_URL } from "../constants";
 
 const game = {
   ...config,
@@ -304,6 +304,7 @@ const Game = () => {
   }, [gameState.rookCol, gameState.rookRow, gameState.playerTurn]);
 
   const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const name = formModal.inputText;
     if (name.length === 0) {
       Swal.fire(
@@ -322,7 +323,7 @@ const Game = () => {
       return;
     }
     // fetch request to create a new game
-    fetch("http://localhost:5000/api/games/createNewGame", {
+    fetch(`${SERVER_URL}/api/games/createNewGame`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -345,16 +346,11 @@ const Game = () => {
           "Please wait for the other player to join...",
           "success"
         ).then((result: any) => {
-          if (
-            result.isConfirmed ||
-            result.dismiss === Swal.DismissReason.cancel
-          ) {
-            updateFormModal({
-              ...formModal,
-              show: false,
-            });
-            updateWaitingModal(true);
-          }
+          updateFormModal({
+            ...formModal,
+            show: false,
+          });
+          updateWaitingModal(true);
         });
       })
       .catch((error) => {
@@ -375,7 +371,7 @@ const Game = () => {
           <pre>{JSON.stringify(gameState, null, 4)}</pre>
         </div> */}
         {waitingForOtherPlayerModal.show && (
-          <Card>
+          <Card id="waiting">
             <Card.Header>
               <h4>Waiting for other player to join</h4>
             </Card.Header>
@@ -395,6 +391,7 @@ const Game = () => {
                   readOnly
                 />
                 <Button
+                  variant="info"
                   onClick={() => {
                     navigator.clipboard.writeText(`${gameId}`);
                     Swal.fire({
@@ -414,7 +411,7 @@ const Game = () => {
           </Card>
         )}
         {formModal.show && (
-          <Card>
+          <Card id="create-game">
             <Card.Header>
               <h4>Create a Game</h4>
             </Card.Header>
@@ -432,8 +429,12 @@ const Game = () => {
                   }}
                 />
                 <div>
-                  <Button type="submit" className="ms-auto mt-3 d-block">
-                    Start Game
+                  <Button
+                    type="submit"
+                    variant="info"
+                    className="ms-auto mt-3 d-block"
+                  >
+                    Create Game
                   </Button>
                 </div>
               </Form>
@@ -442,7 +443,7 @@ const Game = () => {
         )}
         {gameState.isGameStarted && (
           <div className="game-area">
-            <div className="playerSection">
+            <div className="playerSection player-top">
               <div
                 style={{
                   display: "flex",
@@ -487,13 +488,14 @@ const Game = () => {
                     : gameState.player2.playerName
                 }`}{" "}
               </div>
-              <div className="turn text-white position-absolute start-0 bottom-0">
+              <div className="turn start-0 bottom-0">
                 {gameState.playerTurn ? "" : "Opponents Turn"}
               </div>
             </div>
 
-            <IonPhaser game={game} />
-            <div className="playerSection">
+            <IonPhaser game={game} id="canvas" />
+
+            <div className="playerSection player-bottom">
               <div
                 style={{
                   display: "flex",
@@ -531,12 +533,14 @@ const Game = () => {
                 }`}
                 alt=""
               />
-              <div className="text bottom">{`${
-                gameIdParam
-                  ? gameState.player2.playerName
-                  : gameState.player1.playerName
-              } (You)`}</div>
-              <div className="turn text-white position-absolute end-0 bottom-0">
+              <div className="text bottom">
+                {`${
+                  gameIdParam
+                    ? gameState.player2.playerName
+                    : gameState.player1.playerName
+                } (You)`}{" "}
+              </div>
+              <div className="turn end-0 bottom-0">
                 {gameState.playerTurn ? "Your Turn" : ""}
               </div>
             </div>

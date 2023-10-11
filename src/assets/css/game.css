@@ -12,7 +12,7 @@
     height: 100vh;
 }
 
-body .card {
+.game .card {
     width: 480px;
     min-height: 200px;
 }
@@ -22,7 +22,7 @@ body .card {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: 100vh;
+    /* height: 100vh; */
 }
 
 .playerSection {
@@ -30,8 +30,8 @@ body .card {
 }
 
 .playerSection .profileIcon {
-    height: 72px !important;
-    width: 72px !important;
+    height: 72px;
+    width: 72px;
     position: relative;
     z-index: 10;
     margin: 1rem auto;
@@ -43,9 +43,6 @@ body .card {
 .playerSection .text {
     font-size: 0.8rem;
     color: white;
-    position: absolute;
-    left: 0;
-    right: 0;
     text-align: center;
 }
 
@@ -62,11 +59,65 @@ body .card {
     width: 480px;
 }
 
-#info-card {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 480px;
-    min-height: 400px;
+.game #waiting,
+.game #create-game {
+    margin: 1.25rem;
+    color: aqua;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.player-top .turn,
+.player-bottom .turn {
+    position: absolute;
+    font-weight: bold;
+    color: #3DD771;
+}
+
+@media (max-width: 600px) {
+    #canvas {
+        transform: scale(0.8);
+    }
+}
+
+@media (max-width: 400px) {
+    .game {
+        overflow: hidden;
+    }
+
+    #canvas {
+        background-color: #ddf;
+        transform: scale(0.75);
+        margin-top: -40px;
+    }
+
+    .player-top {
+        top: -20px;
+    }
+
+    .player-bottom {
+        top: -50px;
+    }
+
+    .player-top .turn {
+        position: relative !important;
+        bottom: 0 !important;
+        display: block;
+        text-align: center;
+        color: #3DD771;
+        background-color: #000;
+    }
+
+    .player-bottom .turn {
+        position: relative !important;
+        bottom: 0 !important;
+        display: block;
+        text-align: center;
+        color: #3DD771;
+        background-color: #000;
+    }
 }
