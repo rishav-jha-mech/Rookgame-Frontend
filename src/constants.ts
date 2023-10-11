@@ -1,2 +1,2 @@
 export const DECISION_TIMEOUT = 200; // seconds
-export const SERVER_URL = process.env.SERVER_URL || 'http://localhost:5000';
+export const SERVER_URL = "https://cuemath-backend.onrender.com";
