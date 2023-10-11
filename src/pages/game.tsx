@@ -17,7 +17,7 @@ const game = {
 };
 
 // Connect to socketio server
-const socket = io.connect("http://localhost:5000");
+const socket = io.connect(`${SERVER_URL}`);
 
 const Game = () => {
   const {
