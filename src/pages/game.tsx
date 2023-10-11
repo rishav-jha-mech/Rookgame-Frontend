@@ -11,6 +11,7 @@ import { updateGameState } from "../Redux/gameSlice";
 import { kPrettyPrint } from "../chalk";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { DECISION_TIMEOUT, SERVER_URL } from "../constants";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const game = {
   ...config,
@@ -394,14 +395,8 @@ const Game = () => {
                   defaultValue={gameId ?? ""}
                   readOnly
                 />
-                <Button
-                  variant="info"
-                  onClick={() => {
-                    try {
-                      navigator.clipboard.writeText(`${gameId}`);
-                    } catch (error) {
-                      console.log(error);
-                    }
+                <CopyToClipboard
+                  onCopy={() => {
                     Swal.fire({
                       position: "top-end",
                       icon: "success",
@@ -410,10 +405,15 @@ const Game = () => {
                       timer: 1500,
                     });
                   }}
-                  className="position-absolute top-0 end-0 d-block"
+                  text={`${gameId}`}
                 >
-                  Copy
-                </Button>
+                  <Button
+                    variant="info"
+                    className="position-absolute top-0 end-0 d-block"
+                  >
+                    Copy
+                  </Button>
+                </CopyToClipboard>
               </div>
             </Card.Body>
           </Card>

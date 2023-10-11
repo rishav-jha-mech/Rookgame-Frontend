@@ -1,7 +1,6 @@
 // gameSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { GameStateType } from "../hooks/game";
-import { kYellow } from "../chalk";
 
 type optionsGamesType = {
   gameId?: string;
