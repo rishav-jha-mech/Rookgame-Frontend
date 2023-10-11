@@ -1,24 +1,20 @@
-import { Route, Switch, Router } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import Home from "./pages/home";
+import { Provider } from "react-redux";
+import store from "./Redux/store";
 import Game from "./pages/game";
-import { createBrowserHistory } from 'history';
-import { Provider } from 'react-redux';
-import store from './Redux/store';
-
-const history = createBrowserHistory();
+import Home from "./pages/home";
 
 function App() {
-
   return (
     <>
       <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/game" children={() => <Game />} />
-            <Route path="/" children={() => <Home />} />
-          </Switch>
-        </Router>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" Component={Home} />
+            <Route path="/game" Component={Game} />
+          </Routes>
+        </BrowserRouter>
       </Provider>
     </>
   );
