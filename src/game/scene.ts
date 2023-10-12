@@ -146,6 +146,10 @@ export class Game extends Phaser.Scene {
       console.log("Not users turn");
       return;
     }
+    // If rook clicks on itself
+    if (rowNo == this.rookRow && colNo == this.rookCol) {
+      return;
+    }
     // Rook cannot go backwards
     if (rowNo < this.rookRow || colNo > this.rookCol) {
       return;
