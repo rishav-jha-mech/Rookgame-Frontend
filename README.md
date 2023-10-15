@@ -1,11 +1,7 @@
 ## Rook Game Frontend
 
 <p align="center">
-  <img src="./doc/images/rook.svg" alt="rook" width="100"/>
-</p>
-
-<p align="center">
-  <i> This Rook ain't no rookie </i>
+  <img src="./doc/images/snapshot.png" alt="snapshot" />
 </p>
 
 
